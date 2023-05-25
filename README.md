@@ -3,7 +3,7 @@ Binlog分析工具-binlog_analysis.py
 
 ```shell> pip3 install mysql-replication -i "http://mirrors.aliyun.com/pypi/simple" --trusted-host "mirrors.aliyun.com"```
 
-分析表的操作情况
+## 用途：高峰期排查哪些表TPS比较高
 
 #### Usage: python3 binlog_analysis.py <start_index> [<end_index>]
 
