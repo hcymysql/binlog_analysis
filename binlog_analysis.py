@@ -1,3 +1,4 @@
+import re
 import sys
 from pymysqlreplication import BinLogStreamReader
 from pymysqlreplication.row_event import (
@@ -21,10 +22,22 @@ source_mysql_settings = {
 table_counts = {}
 
 # 获取命令行参数
-log_files = sys.argv[1:]
+if len(sys.argv) > 3 or len(sys.argv) == 1:
+    print('Usage: python3 binlog_analysis.py <start_index> [<end_index>]')
+    sys.exit(1)
 
-# 指定Binlog文件并定义Binlog解析器
+start_index = int(sys.argv[1].split('.')[-1])
+end_index = int(sys.argv[2].split('.')[-1]) if len(sys.argv) >= 3 else start_index
+
+# 根据开始和结束索引生成文件名列表
+log_files = [f'mysql-bin.{i:06d}' for i in range(start_index, end_index+1)]
+print(f'process binlog files is : {log_files}')
+
+# 定义Binlog解析器
 for log_file in log_files:
+    # 提取文件名中的数字部分
+    file_number = int(re.search(r'\d+', log_file).group())
+    
     stream = BinLogStreamReader(connection_settings=source_mysql_settings, 
                                 server_id=197307,
                                 log_file=log_file, 
@@ -50,8 +63,12 @@ for log_file in log_files:
             elif event_type == 'DeleteRowsEvent':
                 table_counts[table]['delete'] += 1
 
-# 按照操作次数排序输出结果
+
+# 按照操作次数排序输出最终结果
 sorted_table_counts = sorted(table_counts.items(), 
                              key=lambda x: sum(x[1].values()), reverse=True)
+
+# 打印当前文件的统计结果
 for table, counts in sorted_table_counts:
     print(f'{table}: {counts}')
+
