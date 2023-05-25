@@ -5,6 +5,8 @@ Binlog分析工具-binlog_analysis.py
 
 分析表的操作情况
 
+#### Usage: python3 binlog_analysis.py <start_index> [<end_index>]
+
 ```shell> python3 binlog_analysis.py mysql-bin.049622 mysql-bin.049628```
 
 或
