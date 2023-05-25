@@ -5,7 +5,11 @@ Binlog分析工具-binlog_analysis.py
 
 分析表的操作情况
 
-```shell> python3 binlog_analysis.py```
+```shell> python3 binlog_analysis.py mysql-bin.049622 mysql-bin.049626```
+
+或
+
+```shell> python3 binlog_analysis.py mysql-bin.049622```
 
 输出结果：
 ```new_qrtz_schedule_job: {'insert': 0, 'update': 82652, 'delete': 0}
