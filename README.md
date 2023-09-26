@@ -1,17 +1,17 @@
 # binlog_analysis
-Binlog分析工具-binlog_analysis.py
+Binlog分析工具-binlog_analysis
 
-```shell> pip3 install mysql-replication -i "http://mirrors.aliyun.com/pypi/simple" --trusted-host "mirrors.aliyun.com"```
+```shell> chmod 755 binlog_analysis```
 
 ## 用途：高峰期排查哪些表TPS比较高
 
-#### Usage: python3 binlog_analysis.py <start_index> [<end_index>]
+#### Usage: ./binlog_analysis <start_index> [<end_index>]
 
-```shell> python3 binlog_analysis.py mysql-bin.049622 mysql-bin.049628```
+```shell> ./binlog_analysis -H 192.168.188.197 -u admin -p '123456' -d test -s mysql-bin.049622 -e mysql-bin.049628```
 
 或
 
-```shell> python3 binlog_analysis.py mysql-bin.049622```
+```shell> ./binlog_analysis -H 192.168.188.197 -u admin -p '123456' -d test -s mysql-bin.049622```
 
 输出结果：
 ```new_qrtz_schedule_job: {'insert': 0, 'update': 82652, 'delete': 0}
