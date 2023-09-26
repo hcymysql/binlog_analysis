@@ -36,7 +36,8 @@ options:
 ```shell> ./binlog_analysis -H 192.168.188.197 -u admin -p '123456' -d test -s mysql-bin.049622```
 
 输出结果：
-```new_qrtz_schedule_job: {'insert': 0, 'update': 82652, 'delete': 0}
+```
+new_qrtz_schedule_job: {'insert': 0, 'update': 82652, 'delete': 0}
 
 withdraw_close_send: {'insert': 185, 'update': 456, 'delete': 0}
 
@@ -48,4 +49,7 @@ user_limit_change_log: {'insert': 96, 'update': 96, 'delete': 0}
 
 user_limit_record_log: {'insert': 187, 'update': 0, 'delete': 0}
 
-user_coupon_task: {'insert': 0, 'update': 123, 'delete': 0}```
+user_coupon_task: {'insert': 0, 'update': 123, 'delete': 0}
+```
+
+#### 注：工具适用于Centos7 系统。
