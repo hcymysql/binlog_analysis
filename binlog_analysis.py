@@ -1,5 +1,6 @@
 import re
 import sys
+import argparse
 from pymysqlreplication import BinLogStreamReader
 from pymysqlreplication.row_event import (
     WriteRowsEvent,
@@ -7,31 +8,53 @@ from pymysqlreplication.row_event import (
     DeleteRowsEvent
 )
 
+# 设置命令行参数
+parser = argparse.ArgumentParser(description='Binlog Analysis Tool')
 
-# 连接MySQL数据库
+parser.add_argument('-H', '--host', metavar='<host>', type=str, required=True,
+                    help='the MySQL server host (default: 127.0.0.1)')
+parser.add_argument('-P', '--port', metavar='<port>', type=int, default=3306,
+                    help='the MySQL server port (default: 3306)')
+parser.add_argument('-u', '--user', metavar='<user>', type=str, required=True,
+                    help='the MySQL user name')
+parser.add_argument('-p', '--password', metavar='<password>', type=str, required=True,
+                    help='the MySQL password')
+parser.add_argument('-d', '--database', metavar='<database>', type=str, required=True,
+                    help='the database schema name')
+parser.add_argument('-c', '--charset', metavar='<charset>', type=str, default='utf8',
+                    help='the MySQL connection character set (default: utf8)')
+parser.add_argument('-s', '--start', metavar='<start_index>', type=str, required=True,
+                    help='the start index of binlog files, e.g. mysql-bin.000001')
+parser.add_argument('-e', '--end', metavar='<end_index>', type=str,
+                    help='the end index of binlog files, e.g. mysql-bin.000003')
+                    
+args = parser.parse_args()
+
+# 定义MySQL连接设置
 source_mysql_settings = {
-    "host": "192.168.188.197",
-    "port": 3307,
-    "user": "admin",
-    "passwd": "123456",
-    "database": "test",
-    "charset": "utf8"
+    "host": args.host,
+    "port": args.port,
+    "user": args.user,
+    "passwd": args.password,
+    "database": args.database,
+    "charset": args.charset
 }
+
+# 解析起始和结束索引
+start_index = int(args.start.split('.')[-1])
+end_index = int(args.end.split('.')[-1]) if args.end else start_index
+
+# 根据开始和结束索引生成文件名列表
+log_files = []
+for i in range(start_index, end_index+1):
+    # 将文件名拼接起来
+    file_name = args.start.split('.')[0] + f'.{i:06d}'
+    log_files.append(file_name)
+
+print(f'process binlog files is : {log_files}\n')
 
 # 定义记录表的字典
 table_counts = {}
-
-# 获取命令行参数
-if len(sys.argv) > 3 or len(sys.argv) == 1:
-    print('Usage: python3 binlog_analysis.py <start_index> [<end_index>]')
-    sys.exit(1)
-
-start_index = int(sys.argv[1].split('.')[-1])
-end_index = int(sys.argv[2].split('.')[-1]) if len(sys.argv) >= 3 else start_index
-
-# 根据开始和结束索引生成文件名列表
-log_files = [f'mysql-bin.{i:06d}' for i in range(start_index, end_index+1)]
-print(f'process binlog files is : {log_files}')
 
 # 定义Binlog解析器
 for log_file in log_files:
@@ -39,7 +62,7 @@ for log_file in log_files:
     file_number = int(re.search(r'\d+', log_file).group())
     
     stream = BinLogStreamReader(connection_settings=source_mysql_settings, 
-                                server_id=197307,
+                                server_id=123456789,
                                 log_file=log_file, 
                                 resume_stream=False)
 
@@ -70,5 +93,4 @@ sorted_table_counts = sorted(table_counts.items(),
 
 # 打印当前文件的统计结果
 for table, counts in sorted_table_counts:
-    print(f'{table}: {counts}')
-
+    print(f'{table}: {counts}\n')
